@@ -1,6 +1,17 @@
-from tank import Tank
+import sys
+from time import sleep
 import random
 from terminaltables import SingleTable
+from tank import Tank
+
+
+def spinning_cursor(duration, value):
+    for i in range(duration):
+        for c in '|/-\\':
+            print(value, c)
+            sleep(0.1)
+
+
 
 # table_data = [
 #     ['abc', '192.168.0.100', '192.168.0.101'],
@@ -12,10 +23,9 @@ from terminaltables import SingleTable
 # print(table_instance.table)
 
 tanks = {
-    1: Tank('Alice the Menace', 100, 10, 12),
-    2: Tank('Bill the Grill', 90, 11, 13),
+    '1': Tank('Alice the Menace', 80, 10, 12),
+    '2': Tank('Bill the Grill', 70, 11, 13),
 }
-
 
 alive_tanks = len(tanks)
 
@@ -28,7 +38,8 @@ while alive_tanks:
         counter += 1
 
     table_instance = SingleTable(table_data)
-    table_instance.justify_columns[4] = 'right'
+    for i in range(1, 5):
+        table_instance.justify_columns[i] = 'center'
     print(table_instance.table)
 
     aktiv = input('Wer feuert?')
@@ -40,7 +51,6 @@ while alive_tanks:
     passiv = input(f'{aktiv_tank.name} feuert auf?')
 
     try:
-        aktiv_tank = tanks[aktiv]
         passiv_tank = tanks[passiv]
     except KeyError:
         print('Keinen solchen Panzer gefunden!')
@@ -57,6 +67,7 @@ while alive_tanks:
         print(f'{passiv_tank.name} ist bereits zerstört!')
         continue
 
+    spinning_cursor(3, 'Calculating...')
     treffer = random.randint(1, 101)
 
     aktiv_tank.fire_at(passiv_tank, treffer)
