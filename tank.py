@@ -84,7 +84,6 @@ class Tank:
               Color('{autobgred}{autowhite}BOOM! - %s is hit!{/white}{/bgred}' % (self.name)),
               Color('{autobgred}{autowhite}#{/white}{/bgred}') * x)
         print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * 70))
-        print(Style.RESET_ALL)
         if self.armor == 0:  # > 0:
             #     print(f'Remaining armor {self.armor} ({armor}%)')
             # else:
