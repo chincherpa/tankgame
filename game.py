@@ -52,15 +52,16 @@ items = {   # 'Item', 'effect', 'value' 'Price'
 
 
 def show_shop(buyer):
-    print(str(buyer))
+    print('\n')
+    print(str(buyer), '\n')
     try:
-        shop_table = [['#', 'Item', 'Effect', ' Value', 'Price']]
-        shop_table.append(['1', items['1'][0], items['1'][1], items['1'][2], items['1'][3]])
-        shop_table.append(['2', items['2'][0], items['2'][1], items['2'][2], items['2'][3]])
-        shop_table.append(['3', items['3'][0], items['3'][1], items['3'][2], items['3'][3]])
-        shop_table.append(['4', items['4'][0], items['4'][1], items['4'][2], items['4'][3]])
-        shop_table.append(['', '', '', ''])
-        shop_table.append(['0', items['0'][0], items['0'][1]])
+        shop_table = [['#', 'Item', 'Effect', ' Value', 'Price'],                               # Header
+                      ['1', items['1'][0], items['1'][1], items['1'][2], items['1'][3]],        # Armor+10
+                      ['2', items['2'][0], items['2'][1], items['2'][2], items['2'][3]],        # Armor+20
+                      ['3', items['3'][0], items['3'][1], items['3'][2], items['3'][3]],        # Ammo+2
+                      ['4', items['4'][0], items['4'][1], items['4'][2], items['4'][3]],        # item4
+                      ['', '', '', ''],                                                         # item5
+                      ['0', items['0'][0], items['0'][1]]]                                      # Cancel
 
         shop_table_instance = SingleTable(shop_table, 'Shop')
         # for i in range(2, 60):
@@ -68,38 +69,40 @@ def show_shop(buyer):
         print(shop_table_instance.table)
     except KeyError as e:
         print('------------------------------------------------')
+        print(f'Error: {e.name}')
         print('------------------------------------------------')
-        print('------------------------------------------------')
-        print(f'Fehler: {e.name}')
 
     item = input('What do you want to buy?  ')
 
-    print('type(items[item][2])', type(items[item][2]))
-    print('type(buyer.credits)', type(buyer.credits))
+    if item in '01234':
+        if item == '0':
+            return False
+        elif items[item][3] <= buyer.credits:
+            print(f'{buyer.name} buys {items[item][0]} for {items[item][3]} credits\n')
+            sleep(2)
+            # '1': ('Armor+10', 'Increase armor', 10, 3),
+            # '2': ('Armor+20', 'Increase armor', 20, 5),
+            # '3': ('Shell+2', '2 shells', 2, 3),
+            if item == '1':
+                buyer.armor += items[item][2]
+                print(f'{buyer.name} gets {items[item][2]} {items[item][4]}\n')
+            elif item == '2':
+                buyer.armor += items[item][2]
+                print(f'{buyer.name} gets {items[item][2]} {items[item][4]}\n')
+            elif item == '3':
+                buyer.ammo += items[item][2]
+                print(f'{buyer.name} gets {items[item][2]} {items[item][4]}\n')
 
-    if item == '0':
-        return False
-    elif items[item][2] <= buyer.credits:
-        print(f'{buyer.name} buys {items[item][0]} for {items[item][3]} credits\n')
-        sleep(2)
-        # '1': ('Armor+10', 'Increase armor', 10, 3),
-        # '2': ('Armor+20', 'Increase armor', 20, 5),
-        # '3': ('Shell+2', '2 shells', 2, 3),
-        if item == '1':
-            buyer.armor += items[item][2]
-            print(f'{buyer.name} gets {items[item][2]} {items[item][4]}\n')
-        elif item == '2':
-            buyer.armor += items[item][2]
-            print(f'{buyer.name} gets {items[item][2]} {items[item][4]}\n')
-        elif item == '3':
-            buyer.ammo += items[item][2]
-            print(f'{buyer.name} gets {items[item][2]} {items[item][4]}\n')
-
-        buyer.credits -= items[item][3]
-        sleep(3)
-        return True
+            buyer.credits -= items[item][3]
+            sleep(3)
+            return True
+        else:
+            print(f'Not enough credits to buy {items[item][0]}!')
+            print(f'{items[item][0]} costs {items[item][3]} credits.')
+            print(f'You have {buyer.credits} credits.\n')
+            return False
     else:
-        print('Not enough credits!')
+        print('Item does ot exist!')
         return False
 
 
@@ -202,13 +205,14 @@ while alive_tanks:
     action = input('Shoot a tank [1] or go to SHOP [9]?  ')
 
     if action == '9':
-        result = show_shop(aktiv_tank)
+        show_shop(aktiv_tank)
+        sleep(3)
+        continue
         # result = show_shop(aktiv_tank)
         # if result is None:
         #     continue
         # else:                         What else? -> continue
         #     continue
-
     elif action == '1':
         ######################
         ##### get passive tank
