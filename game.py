@@ -74,6 +74,9 @@ def show_shop(buyer):
 
     item = input('What do you want to buy?  ')
 
+    print('type(items[item][2])', type(items[item][2]))
+    print('type(buyer.credits)', type(buyer.credits))
+
     if item == '0':
         return False
     elif items[item][2] <= buyer.credits:
@@ -111,7 +114,7 @@ tanks = {     # NAME    armor|ammo|power|dmg_mitigation %
 
 skip = True
 if not skip:
-    print('Instructions:\n\n'
+    print('\n\nInstructions:\n\n'
           'Every tank has these attributes:\n'
           '  - name           : Name of the tank/player\n'
           '  - armor          : amount of armor, decreased (-damage) when hit (min = 0)\n'
@@ -129,7 +132,7 @@ if not skip:
 
     input("Press ENTER to start...")
 else:
-    print('Instructions skipped\n')
+    print('\n\nInstructions skipped\n')
 
 for tank in tanks.keys():
     print(str(tanks[tank]))
