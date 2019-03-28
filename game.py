@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 from time import sleep
 import random
 
@@ -169,6 +170,9 @@ for tank in tanks.keys():
     ltanks.append(tanks[tank].name)
 
 while alive_tanks:
+
+    os.system('cls' if os.name == 'nt' else 'clear')
+
     c = 0
     for tank in tanks.keys():
         c += tanks[tank].alive
