@@ -43,7 +43,7 @@ class Tank:
     def __str__(self):
         if self.alive:
             armor = int((self.armor / self.ARMORSTART) * 100)
-            return f'{self.name} has {armor}% armor and {self.ammo} shells ({self.power}) left.'\
+            return f'{self.name} has {armor}% armor and {self.ammo} shells ({self.power} power) left.'\
                    f'\n{self.name} can mitigate {self.dmg_mitigation}% of damage.'\
                    f'\n- Chance to miss:   {self.miss}%.'\
                    f'\n- Chance to malfunc: {self.malfunction}%.'
@@ -99,6 +99,7 @@ class Tank:
         print(Color('{bgmagenta}{white}#{/white}{/bgmagenta}' * x),
               Color('{bgmagenta}{white}KAWOOM! - %s explodes!{/white}{/bgmagenta}' % (self.name)),
               Color('{bgmagenta}{white}#{/white}{/bgmagenta}') * x)
+        print(Color('{bgmagenta}{white}#{/white}{/bgmagenta}' * 70))
         sleep(1)
         print(Color('{bgmagenta}{white}#{/white}{/bgmagenta}' * y),
               Color('{bgmagenta}{white}KAWOOM! - %s is destroyed!{/white}{/bgmagenta}' % (self.name)),
