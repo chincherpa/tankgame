@@ -65,7 +65,8 @@ class Tank:
 
     def hit(self, power):
         # armor is decreased by (power of shell - dmg mitigation)
-        self.armor -= int(power * float((100 - self.dmg_mitigation)/100))
+        damage = int(power * float((100 - self.dmg_mitigation)/100))
+        self.armor -= damage
         if self.armor < 0:
             self.armor = 0
         
@@ -79,14 +80,16 @@ class Tank:
 
         # calculate x = number of '#' before and after
         x = int((70 - len('BOOM! - %s is hit!' % (self.name)) - 2) / 2)
+        y = int((70 - len('and looses %i armor!' % (damage)) - 2) / 2)
         print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * 70))
         print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * x),
               Color('{autobgred}{autowhite}BOOM! - %s is hit!{/white}{/bgred}' % (self.name)),
               Color('{autobgred}{autowhite}#{/white}{/bgred}') * x)
+        print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * y),
+              Color('{autobgred}{autowhite}and looses %i armor!{/white}{/bgred}' % (damage)),
+              Color('{autobgred}{autowhite}#{/white}{/bgred}') * y)
         print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * 70))
-        if self.armor == 0:  # > 0:
-            #     print(f'Remaining armor {self.armor} ({armor}%)')
-            # else:
+        if self.armor == 0:
             self.explode()
 
     def explode(self):
