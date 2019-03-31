@@ -15,7 +15,7 @@ Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Wi
 
 # TODO: Shop - Done
 # TODO: dead tanks can't play - Done
-# TODO: vs. Computer - Done
+# TODO: vs. Computer - Done - - malfunction missing - Done
 # TODO: 2 Players
 # TODO: player chooses name
 # TODO: choose from predefined tanks
@@ -44,7 +44,7 @@ def spinning_cursor(duration, value=None):
     print('\n')
 
 
-def RepresentsInt(s):
+def represents_int(s):
     try:
         int(s)
         return True
@@ -53,6 +53,18 @@ def RepresentsInt(s):
 
 
 def shoot(active, target):
+    print(f'{active.name} is aiming at {target.name}\n')
+    spinning_cursor(4, 'Calculating...')
+    print(f'{active.name} shoots.....\n')
+
+    #################################
+    # Check if tank has a malfunction
+    sleep(1)
+    malfunction = random.randint(1, 101)
+    if malfunction <= active.malfunction:
+        print(f'Oh no, {active.name} has a malfunction :(\n')
+        return 'malfunction'
+
     ####################
     # Check if tank hits
     treffer = random.randint(1, 101)
@@ -188,7 +200,6 @@ while not mode:
     else:
         mode = False
 
-
 for tank in tanks.keys():
     print(str(tanks[tank]))
     print('\n')
@@ -248,7 +259,7 @@ while alive_tanks:
 
         #######################################
         # The player entered a number of a tank
-        if RepresentsInt(active[0]):
+        if represents_int(active[0]):
             if len(active) == 1:
                 if active[0] in tanks.keys():
                     if not tanks[active[0]].alive:
@@ -365,47 +376,40 @@ while alive_tanks:
         # get active and passive tanks #
         ############# END ##############
 
-        ################################################
-        # Check if one of the tanks is already destroyed
-        # if not active_tank.alive:
-        #     print(f'{active_tank.name} is already destroyed!')
-        #     continue
-        # elif not passive_tank.alive:
-        #     print(f'{passive_tank.name} is already destroyed!')
-        #     continue
-    
-        print(f'{active_tank.name} is aiming at {passive_tank.name}\n')
-        spinning_cursor(4, 'Calculating...')
-        print(f'{active_tank.name} shoots.....\n')
-
-        #################################
-        # Check if tank has a malfunction
-        sleep(1)
-        malfunction = random.randint(1, 101)
-        if malfunction <= active_tank.malfunction:
-            print(f'{active_tank.name} has a malfunction :(\n')
+        shot = shoot(active_tank, passive_tank)
+        # Tank has a malfunction
+        if shot == 'malfunction':
             sleep(2)
             continue
-
-        shot = shoot(active_tank, passive_tank)
-        if shot == 'miss':  # miss
-            sleep(3)
+        # Tank missed the enemy
+        elif shot == 'miss':
+            sleep(1)
             continue
-        else:  # hit
+        # Tank hits
+        else:
             active_tank.fire_at(passive_tank)
 
     elif pvc:
-        if playersturn:                                                     # It's player's turn
-            print("\nIt's your turn")
-            sleep(2)
+        # It's player's turn
+        if playersturn:
+            print(f"\nIt's {player_tank.name}'s turn")
+            sleep(0.5)
             action = input('\nShoot the [E]nemy or go to the [S]hop?  ')
             if action.lower() == 'e':
+                print('You shoot...')
                 shot = shoot(player_tank, computer_tank)
-                if shot == 'miss':  # miss
+                # Tank has a malfunction
+                if shot == 'malfunction':
                     playersturn = not playersturn
-                    sleep(3)
+                    sleep(2)
                     continue
-                else:  # hit
+                # Tank missed the enemy
+                if shot == 'miss':
+                    playersturn = not playersturn
+                    sleep(1)
+                    continue
+                # Tank hits
+                else:
                     player_tank.fire_at(computer_tank)
             elif action.lower() == 's':
                 shop(player_tank)
@@ -416,15 +420,23 @@ while alive_tanks:
                 print('Unknown input!')
                 sleep(3)
                 continue
-        else:                                                                # It's computer's turn
+        # It's computer's turn
+        else:
             print("\nIt's computer's turn\n")
-            sleep(2)
+            sleep(1)
             shot = shoot(computer_tank, player_tank)
-            if shot == 'miss':  # miss
+            # Tank has a malfunction
+            if shot == 'malfunction':
                 playersturn = not playersturn
-                sleep(3)
+                sleep(2)
                 continue
-            else:  # hit
+            # Tank missed the enemy
+            if shot == 'miss':
+                playersturn = not playersturn
+                sleep(1)
+                continue
+            # Tank hits
+            else:
                 computer_tank.fire_at(player_tank)
 
         # print(f'playersturn: {playersturn}')
