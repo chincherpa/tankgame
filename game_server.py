@@ -144,10 +144,10 @@ def handle_client(client):
 ## This is called after every message has been received by a client.
 ## It will send a message to all clients in the CLIENTS dictionary
 ## And format the broadcast with the clients name followed by the message.
-def broadcast(message, prefix=''):
+def broadcast(message, prefix='>> '):
     try:
         for user in CLIENTS:
-            user.send("{}{}".format(prefix, message).encode())
+            user.send(f'{prefix}{message}'.encode())
     except:
         pass
 
@@ -259,22 +259,15 @@ def server_cmds():
             print('[*] Not a valid server command')
 
 
-## Puts the server into listening mode
-## Starts the thread on accepting all client connections to the server.
-def Main():
-    SERVER.listen(5)
-    ACCEPT_THREAD = threading.Thread(target=accept_connections)
-    ACCEPT_THREAD.start()
-    ACCEPT_THREAD.join()
-    SERVER.close()
-
-
-## Clear the screen on start and display the main Banner.
-## Then jumps to the main TCP related stuff.
-if __name__ == '__main__':
-    os.system('cls')
-    print(BANNER)
-    Main()
+# ## Puts the server into listening mode
+# ## Starts the thread on accepting all client connections to the server.
+# def Main():
+#     SERVER.listen(5)
+#     ACCEPT_THREAD = threading.Thread(target=accept_connections)
+#     ACCEPT_THREAD.start()
+#     ACCEPT_THREAD.join()
+#     SERVER.close()
+#
 
 
 #######################################################################################################################
@@ -439,253 +432,297 @@ def shop(buyer):
         return False
 
 
-##################
-##### Instructions
-skip = not True
-if not skip:
-    print('\n\nInstructions:\n\n'
-          'Every tank has these attributes:\n'
-          '  - name           : Name of the tank/player\n'
-          '  - armor          : amount of armor, decreased (-damage) when hit (min = 0)\n'
-          '  - ammo           : amount of shells, -1 per shot\n'
-          '  - power          : damage per shell\n'
-          '  - alive          : is tank alive?, starts with TRUE\n'
-          '  - dmg_mitigation : Mitigation of incoming damage, -1 per hit (min = 0)\n'
-          '  - credits        : amount of credits, starts with ' + str(SETTINGS['credits']) + '\n'
-          '\n'
-          '  --- SETTINGS ---\n'
-          '  - miss           : tanks can miss by ' + str(SETTINGS['probability_to_miss']) + '%\n'
-          '  - malfunction    : tanks can have malfunction by ' + str(
-        SETTINGS['probability_of_malfunction']) + '%, increased by 1 when hit\n\n'
-          )
+## Puts the server into listening mode
+## Starts the thread on accepting all client connections to the server.
+def Main():
+    SERVER.listen(5)
+    broadcast('Los geht es 0')
+    ACCEPT_THREAD = threading.Thread(target=accept_connections)
+    broadcast('Los geht es 1')
+    ACCEPT_THREAD.start()
+    broadcast('Los geht es 2')
+    ACCEPT_THREAD.join()
+    broadcast('Los geht es 3')
+    SERVER.close()
+    broadcast('Los geht es 4')
 
-    input('Press ENTER to start...')
-else:
-    print('\n\nInstructions skipped\n')
 
-mode = False
-pvp = False
-pvc = False
-while not mode:
-    mode = input('\nPlayer vs. [P]layer or [C]omputer?  ')
-    if mode.lower() == 'p':
-        pvp = True
-        tanks = {     # NAME    armor|ammo|power|dmg_mitigation %
-            '1': Tank('Björn',  10,  10,  12,   15),
-            '2': Tank('Lutz',   50,   13,  12,   18),
-            '3': Tank('Martin', 100,  10,  13,   16),
-        }
-    elif mode.lower() == 'c':
-        pvc = True
-        playersturn = True
-        playersname = input('\nHow do you want to be called?  ')
-        tanks = {     # NAME      armor|ammo|power|dmg_mitigation %
-            'p': Tank(playersname, 120,  10,  12,   15),
-            'c': Tank('Computer',  90,  13,  12,   18),
-        }
-        player_tank = tanks['p']
-        computer_tank = tanks['c']
+
+def NIGGESE():
+    ##################
+    ##### Instructions
+    skip = not True
+    if not skip:
+        print('\n\nInstructions:\n\n'
+              'Every tank has these attributes:\n'
+              '  - name           : Name of the tank/player\n'
+              '  - armor          : amount of armor, decreased (-damage) when hit (min = 0)\n'
+              '  - ammo           : amount of shells, -1 per shot\n'
+              '  - power          : damage per shell\n'
+              '  - alive          : is tank alive?, starts with TRUE\n'
+              '  - dmg_mitigation : Mitigation of incoming damage, -1 per hit (min = 0)\n'
+              '  - credits        : amount of credits, starts with ' + str(SETTINGS['credits']) + '\n'
+              '\n'
+              '  --- SETTINGS ---\n'
+              '  - miss           : tanks can miss by ' + str(SETTINGS['probability_to_miss']) + '%\n'
+              '  - malfunction    : tanks can have malfunction by ' + str(
+            SETTINGS['probability_of_malfunction']) + '%, increased by 1 when hit\n\n'
+              )
+
+        input('Press ENTER to start...')
     else:
-        mode = False
+        print('\n\nInstructions skipped\n')
 
-for tank in tanks.keys():
-    print(str(tanks[tank]))
-    print('\n')
-
-alive_tanks = get_alive_tanks()
-
-ltanks = []
-for tank in tanks.keys():
-    ltanks.append(tanks[tank].name)
-
-while alive_tanks:
-    # print(f'alive_tanks: {alive_tanks}')
-    # print(f'mode: {mode}')
-    # print(f'pvp: {pvp}')
-    # print(f'pvc: {pvc}')
-    # print(f'playersturn: {playersturn}')
-    # print('\n')
-
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-    c = 0
-    for tank in tanks.keys():
-        c += tanks[tank].alive
-
-    #############################
-    ##### Create table with tanks
-    tank_table = [['#', 'Name', 'Armor', 'Ammo', 'Power', 'Dmg red.', 'Miss', 'Malf.', 'Credits']]
-    counter = 1
-    for tank in tanks.keys():
-        if tanks[tank].alive:
-            name = Color('{autogreen}{}{/autogreen}').format(tanks[tank].name)
+    mode = False
+    pvp = False
+    pvc = False
+    while not mode:
+        mode = input('\nPlayer vs. [P]layer or [C]omputer?  ')
+        if mode.lower() == 'p':
+            pvp = True
+            tanks = {     # NAME    armor|ammo|power|dmg_mitigation %
+                '1': Tank('Björn',  10,  10,  12,   15),
+                '2': Tank('Lutz',   50,   13,  12,   18),
+                '3': Tank('Martin', 100,  10,  13,   16),
+            }
+        elif mode.lower() == 'c':
+            pvc = True
+            playersturn = True
+            playersname = input('\nHow do you want to be called?  ')
+            tanks = {     # NAME      armor|ammo|power|dmg_mitigation %
+                'p': Tank(playersname, 120,  10,  12,   15),
+                'c': Tank('Computer',  90,  13,  12,   18),
+            }
+            player_tank = tanks['p']
+            computer_tank = tanks['c']
         else:
-            name = Color('{autored}{}{/autored}').format(tanks[tank].name)
+            mode = False
 
-        armor = tanks[tank].armor
-        if tanks[tank].armor < 51:
-            armor = Color('{autoyellow}{}{/autoyellow}').format(tanks[tank].armor)
-        if tanks[tank].armor < 26:
-            armor = Color('{autored}{}{/autored}').format(tanks[tank].armor)
+    for tank in tanks.keys():
+        print(str(tanks[tank]))
+        print('\n')
 
-        tank_table.append(
-            [counter, name, armor, tanks[tank].ammo, tanks[tank].power, tanks[tank].dmg_mitigation, tanks[tank].miss,
-             tanks[tank].malfunction, tanks[tank].credits])
-        counter += 1
-    table_instance = SingleTable(tank_table, 'Tanks')
-    for i in range(2, 60):
-        table_instance.justify_columns[i] = 'center'
-    print(table_instance.table)
+    alive_tanks = get_alive_tanks()
 
-    if pvp:
-        ############ START #############
-        # get active and passive tanks #
+    ltanks = []
+    for tank in tanks.keys():
+        ltanks.append(tanks[tank].name)
 
-        #################
-        # get active tank
-        active = input('Active tank?  ')
+    while alive_tanks:
+        # print(f'alive_tanks: {alive_tanks}')
+        # print(f'mode: {mode}')
+        # print(f'pvp: {pvp}')
+        # print(f'pvc: {pvc}')
+        # print(f'playersturn: {playersturn}')
+        # print('\n')
 
-        #######################################
-        # The player entered a number of a tank
-        if represents_int(active[0]):
-            if len(active) == 1:
-                if active[0] in tanks.keys():
-                    if not tanks[active[0]].alive:
-                        print('Tank is already destroyed!')
-                        sleep(1)
-                        print('Choose again')
-                        sleep(2)
-                        continue
-                    else:
-                        active_tank = tanks[active[0]]
-                else:
-                    print('Tank does not exist!')
-                    sleep(3)
-                    continue
+        os.system('cls' if os.name == 'nt' else 'clear')
 
-                print(f'\n-> {active_tank.name}\n')
+        c = 0
+        for tank in tanks.keys():
+            c += tanks[tank].alive
 
-                action = input('Shoot an [E]nemy or go to [S]hop?  ')
+        #############################
+        ##### Create table with tanks
+        tank_table = [['#', 'Name', 'Armor', 'Ammo', 'Power', 'Dmg red.', 'Miss', 'Malf.', 'Credits']]
+        counter = 1
+        for tank in tanks.keys():
+            if tanks[tank].alive:
+                name = Color('{autogreen}{}{/autogreen}').format(tanks[tank].name)
+            else:
+                name = Color('{autored}{}{/autored}').format(tanks[tank].name)
 
-                if action.lower() == 's':
-                    shop(active_tank)
-                    sleep(2)
-                    continue
-                elif action.lower() == 'e':
-                    ##################
-                    # get passive tank
-                    passive = input('Target?  ')
+            armor = tanks[tank].armor
+            if tanks[tank].armor < 51:
+                armor = Color('{autoyellow}{}{/autoyellow}').format(tanks[tank].armor)
+            if tanks[tank].armor < 26:
+                armor = Color('{autored}{}{/autored}').format(tanks[tank].armor)
 
-                    if passive in tanks.keys():
-                        passive_tank = tanks[passive]
-                        print(f'\n-> {passive_tank.name}\n')
+            tank_table.append(
+                [counter, name, armor, tanks[tank].ammo, tanks[tank].power, tanks[tank].dmg_mitigation, tanks[tank].miss,
+                 tanks[tank].malfunction, tanks[tank].credits])
+            counter += 1
+        table_instance = SingleTable(tank_table, 'Tanks')
+        for i in range(2, 60):
+            table_instance.justify_columns[i] = 'center'
+        print(table_instance.table)
+
+        if pvp:
+            ############ START #############
+            # get active and passive tanks #
+
+            #################
+            # get active tank
+            active = input('Active tank?  ')
+
+            #######################################
+            # The player entered a number of a tank
+            if represents_int(active[0]):
+                if len(active) == 1:
+                    if active[0] in tanks.keys():
+                        if not tanks[active[0]].alive:
+                            print('Tank is already destroyed!')
+                            sleep(1)
+                            print('Choose again')
+                            sleep(2)
+                            continue
+                        else:
+                            active_tank = tanks[active[0]]
                     else:
                         print('Tank does not exist!')
                         sleep(3)
                         continue
-                    if active == passive:
-                        print('Tanks cannot shoots at themselves')
+
+                    print(f'\n-> {active_tank.name}\n')
+
+                    action = input('Shoot an [E]nemy or go to [S]hop?  ')
+
+                    if action.lower() == 's':
+                        shop(active_tank)
+                        sleep(2)
+                        continue
+                    elif action.lower() == 'e':
+                        ##################
+                        # get passive tank
+                        passive = input('Target?  ')
+
+                        if passive in tanks.keys():
+                            passive_tank = tanks[passive]
+                            print(f'\n-> {passive_tank.name}\n')
+                        else:
+                            print('Tank does not exist!')
+                            sleep(3)
+                            continue
+                        if active == passive:
+                            print('Tanks cannot shoots at themselves')
+                            sleep(3)
+                            continue
+                        if not passive_tank.alive:
+                            print('Tank is already destroyed!')
+                            sleep(3)
+                            continue
+                    else:
+                        print('Wrong input!')
                         sleep(3)
                         continue
-                    if not passive_tank.alive:
-                        print('Tank is already destroyed!')
-                        sleep(3)
+
+                elif len(active) == 2:
+                    # input = 1s     1 to shop
+                    if active[0] in tanks.keys() and active[1] == 's':
+                        if not tanks[active[0]].alive:
+                            print('Tank is already destroyed!')
+                            sleep(1)
+                            print('Choose again')
+                            continue
+                        else:
+                            active_tank = tanks[active[0]]
+                            shop(active_tank)
+                            sleep(2)
+                            continue
+
+                    # input = 12     1 shoots 2
+                    if active[0] in tanks.keys() and active[1] in tanks.keys():
+                        if not tanks[active[0]].alive or not tanks[active[1]].alive:
+                            print('One of these tanks is already destroyed!')
+                            sleep(1)
+                            print('Choose again')
+                            sleep(2)
+                            continue
+                        if active[0] == active[1]:
+                            print('Tanks cannot shoots at themselves')
+                            sleep(2)
+                            continue
+                        else:
+                            active_tank = tanks[active[0]]
+                            passive_tank = tanks[active[1]]
+                    else:
+                        print('One of these tanks does not exist!')
+                        sleep(1)
+                        print('Choose again')
+                        sleep(2)
                         continue
+
+                # elif len(active) == 3:
+                #     # input = 1e3    1 shoots 3
+                #     if active[0] in tanks.keys() and active[1].lower() == 'e' and active[2] in tanks.keys():
+                #         if not tanks[active[0]].alive or not tanks[active[2]].alive:
+                #             print('One of these tanks is already destroyed!')
+                #             sleep(1)
+                #             print('Choose again')
+                #             sleep(2)
+                #             continue
+                #         if active[0] == active[2]:
+                #             print('Tanks cannot shoots at themselves')
+                #             sleep(2)
+                #             continue
+                #         else:
+                #             active_tank = tanks[active[0]]
+                #             passive_tank = tanks[active[2]]
+                #     else:
+                #         print('Wrong input!')
+                #         sleep(3)
+                #         continue
                 else:
                     print('Wrong input!')
                     sleep(3)
                     continue
-
-            elif len(active) == 2:
-                # input = 1s     1 to shop
-                if active[0] in tanks.keys() and active[1] == 's':
-                    if not tanks[active[0]].alive:
-                        print('Tank is already destroyed!')
-                        sleep(1)
-                        print('Choose again')
-                        continue
-                    else:
-                        active_tank = tanks[active[0]]
-                        shop(active_tank)
-                        sleep(2)
-                        continue
-
-                # input = 12     1 shoots 2
-                if active[0] in tanks.keys() and active[1] in tanks.keys():
-                    if not tanks[active[0]].alive or not tanks[active[1]].alive:
-                        print('One of these tanks is already destroyed!')
-                        sleep(1)
-                        print('Choose again')
-                        sleep(2)
-                        continue
-                    if active[0] == active[1]:
-                        print('Tanks cannot shoots at themselves')
-                        sleep(2)
-                        continue
-                    else:
-                        active_tank = tanks[active[0]]
-                        passive_tank = tanks[active[1]]
-                else:
-                    print('One of these tanks does not exist!')
-                    sleep(1)
-                    print('Choose again')
-                    sleep(2)
-                    continue
-
-            # elif len(active) == 3:
-            #     # input = 1e3    1 shoots 3
-            #     if active[0] in tanks.keys() and active[1].lower() == 'e' and active[2] in tanks.keys():
-            #         if not tanks[active[0]].alive or not tanks[active[2]].alive:
-            #             print('One of these tanks is already destroyed!')
-            #             sleep(1)
-            #             print('Choose again')
-            #             sleep(2)
-            #             continue
-            #         if active[0] == active[2]:
-            #             print('Tanks cannot shoots at themselves')
-            #             sleep(2)
-            #             continue
-            #         else:
-            #             active_tank = tanks[active[0]]
-            #             passive_tank = tanks[active[2]]
-            #     else:
-            #         print('Wrong input!')
-            #         sleep(3)
-            #         continue
             else:
                 print('Wrong input!')
                 sleep(3)
                 continue
-        else:
-            print('Wrong input!')
-            sleep(3)
-            continue
 
-        # get active and passive tanks #
-        ############# END ##############
+            # get active and passive tanks #
+            ############# END ##############
 
-        shot = shoot(active_tank, passive_tank)
-        # Tank has a malfunction
-        if shot == 'malfunction':
-            sleep(2)
-            continue
-        # Tank missed the enemy
-        elif shot == 'miss':
-            sleep(1)
-            continue
-        # Tank hits
-        else:
-            active_tank.fire_at(passive_tank)
+            shot = shoot(active_tank, passive_tank)
+            # Tank has a malfunction
+            if shot == 'malfunction':
+                sleep(2)
+                continue
+            # Tank missed the enemy
+            elif shot == 'miss':
+                sleep(1)
+                continue
+            # Tank hits
+            else:
+                active_tank.fire_at(passive_tank)
 
-    elif pvc:
-        # It's player's turn
-        if playersturn:
-            print(f"\nIt's {player_tank.name}'s turn")
-            sleep(0.5)
-            action = input('\nShoot the [E]nemy or go to the [S]hop?  ')
-            if action.lower() == 'e':
-                print('You shoot...')
-                shot = shoot(player_tank, computer_tank)
+        elif pvc:
+            # It's player's turn
+            if playersturn:
+                print(f"\nIt's {player_tank.name}'s turn")
+                sleep(0.5)
+                action = input('\nShoot the [E]nemy or go to the [S]hop?  ')
+                if action.lower() == 'e':
+                    print('You shoot...')
+                    shot = shoot(player_tank, computer_tank)
+                    # Tank has a malfunction
+                    if shot == 'malfunction':
+                        playersturn = not playersturn
+                        sleep(2)
+                        continue
+                    # Tank missed the enemy
+                    if shot == 'miss':
+                        playersturn = not playersturn
+                        sleep(1)
+                        continue
+                    # Tank hits
+                    else:
+                        player_tank.fire_at(computer_tank)
+                elif action.lower() == 's':
+                    shop(player_tank)
+                    sleep(2)
+                    playersturn = not playersturn
+                    continue
+                else:
+                    print('Unknown input!')
+                    sleep(3)
+                    continue
+            # It's computer's turn
+            else:
+                print("\nIt's computer's turn\n")
+                sleep(1)
+                shot = shoot(computer_tank, player_tank)
                 # Tank has a malfunction
                 if shot == 'malfunction':
                     playersturn = not playersturn
@@ -698,49 +735,32 @@ while alive_tanks:
                     continue
                 # Tank hits
                 else:
-                    player_tank.fire_at(computer_tank)
-            elif action.lower() == 's':
-                shop(player_tank)
-                sleep(2)
-                playersturn = not playersturn
-                continue
-            else:
-                print('Unknown input!')
-                sleep(3)
-                continue
-        # It's computer's turn
+                    computer_tank.fire_at(player_tank)
+
+            # print(f'playersturn: {playersturn}')
+            playersturn = not playersturn
+            # print(f'playersturn: {playersturn}')
+            # input('weiter...')
         else:
-            print("\nIt's computer's turn\n")
-            sleep(1)
-            shot = shoot(computer_tank, player_tank)
-            # Tank has a malfunction
-            if shot == 'malfunction':
-                playersturn = not playersturn
-                sleep(2)
-                continue
-            # Tank missed the enemy
-            if shot == 'miss':
-                playersturn = not playersturn
-                sleep(1)
-                continue
-            # Tank hits
-            else:
-                computer_tank.fire_at(player_tank)
+            print('ERROR')
+            print('this should never occure')
 
-        # print(f'playersturn: {playersturn}')
-        playersturn = not playersturn
-        # print(f'playersturn: {playersturn}')
-        # input('weiter...')
-    else:
-        print('ERROR')
-        print('this should never occure')
+        # number of alive tanks minus 1 => last one is the winner
+        alive_tanks = get_alive_tanks() - 1
+        sleep(2)
 
-    # number of alive tanks minus 1 => last one is the winner
-    alive_tanks = get_alive_tanks() - 1
-    sleep(2)
+    for tank in tanks.values():
+        if tank.alive:
+            print()
+            print(f'{tank.name} is the winner - WOOHOO')
+            print()
 
-for tank in tanks.values():
-    if tank.alive:
-        print()
-        print(f'{tank.name} is the winner - WOOHOO')
-        print()
+
+
+## Clear the screen on start and display the main Banner.
+## Then jumps to the main TCP related stuff.
+if __name__ == '__main__':
+    os.system('cls')
+    print(BANNER)
+    Main()
+

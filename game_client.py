@@ -29,7 +29,6 @@
 # @os is used only for clearing the screen and exiting if no connection is found.
 # @time is used in the connection phase of the client.
 import socket
-from _thread import *
 import threading
 import os
 import time
@@ -135,32 +134,12 @@ def receive():
         pass
 
 
-# This thread is used to handle the task of sending messages to the chat room.
 def send_msg(message):
-    # Is always asking for an input
-##    while True:
-
-        # Get message
-##        message = input(">> ")
-
-        # Try and send the message to the server.
-        try:
-            # If the message is not a <quit> request, it will send the contents of
-            # The message to the server and then wait for another input.
-##            if message != '<quit>':
-##                CLIENT.send(message.encode())
-
-            # If it is a <quit> request, send it off and then quit this thread.
-##            else:
-                CLIENT.send(message.encode())
-##                break
-
-        # This will only be displayed after the server has Acknowledged the <quit> request
-        # Or if the server has been shutdown while the client is still connected.
-        except:
-            print("Connection to server lost")
-            return 'connection_lost'
-##            break
+    try:
+        CLIENT.send(message.encode())
+    except:
+        print("Connection to server lost")
+        return 'connection_lost'
 
 
 # Clear Screen and Starts the connection test to see if the server is online.
