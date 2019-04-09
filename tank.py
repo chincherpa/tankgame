@@ -3,7 +3,6 @@ import sys
 from time import sleep
 from colorclass import Color
 
-
 SETTINGS = {
     'probability_to_miss': 20,
     'probability_of_malfunction': 5,

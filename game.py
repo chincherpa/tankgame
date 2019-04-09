@@ -17,7 +17,7 @@ Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Wi
 # TODO: player chooses name - Done
 # TODO: choose from predefined tanks
 # TODO: dodging
-# TODO: network
+## TODO: network
 
 
 def get_alive_tanks():
