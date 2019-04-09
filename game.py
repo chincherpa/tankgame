@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 import os
-from time import sleep
-import random
 
 from terminaltables import SingleTable
 from colorclass import Color, Windows
@@ -445,8 +442,8 @@ while alive_tanks:
         # It's player's turn
         if playersturn:
             print(f"\nIt's {player_tank.name}'s turn")
-            sleep(0.5)
-            action = 'e' #input('\nShoot the [E]nemy or go to the [S]hop?  ')
+            # sleep(0.5)
+            action = input('\nShoot the [E]nemy or go to the [S]hop?  ')
             if action.lower() == 'e':
                 print(f'\n{player_tank.name} shoots...')
                 shot = shoot(player_tank, computer_tank)
