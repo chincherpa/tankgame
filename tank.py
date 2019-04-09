@@ -1,3 +1,5 @@
+import random
+import sys
 from time import sleep
 from colorclass import Color
 
@@ -6,6 +8,20 @@ SETTINGS = {
     'probability_of_malfunction': 5,
     'credits': 5,
 }
+
+
+def print_slow(str):
+    for letter in str:
+        print(letter, end='')
+        sleep(.1)
+
+
+def spinning_cursor(duration, value=None):
+    for _ in range(duration):
+        for cursor in '|/-\\':
+            sleep(0.1)
+            sys.stdout.write(f'\r{cursor} {value}')
+            sys.stdout.flush()
 
 
 class Tank:
@@ -47,21 +63,29 @@ class Tank:
                    f'\n{self.name} can mitigate {self.dmg_mitigation}% of damage.'\
                    f'\n- Chance to miss:   {self.miss}%.'\
                    f'\n- Chance to malfunc: {self.malfunction}%.'
-#        elif not self.alive:
         else:
             return f'{self.name} is already destroyed!'
-#        else:
-#            return f'{self.name} does not exist!'
 
     def fire_at(self, target):
-        if self.ammo > 0:
+        # Check if tank hits
+        treffer = random.randint(1, 101)
+        print('')
+        # spinning_cursor(3, 'The projectile flies...')
+        # print('The projectile flies...\n')
+        print_slow('/' + chr(172) * 20 + '\\')
+        if treffer <= self.miss:
+            print('\n')
+            print(Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 20))
+            print(Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 7),
+                  Color('{bgmagenta}{white}MISS{/white}{/bgmagenta}'),
+                  Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 7))
+            print(Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 20))
+            sleep(2)
+        else:
             self.ammo -= 1
             self.credits += 1
-            sleep(2)
+            # sleep(2)
             target.hit(self.power)
-        else:
-            print(f'{self.name} has no shells left!')
-            sleep(2)
 
     def hit(self, power):
         # armor is decreased by (power of shell - dmg mitigation)
@@ -81,6 +105,7 @@ class Tank:
         # calculate x = number of '#' before and after
         x = int((70 - len('BOOM! - %s is hit!' % (self.name)) - 2) / 2)
         y = int((70 - len('and looses %i armor!' % (damage)) - 2) / 2)
+        print('\n')
         print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * 70))
         print(Color('{autobgred}{autowhite}#{/white}{/bgred}' * x),
               Color('{autobgred}{autowhite}BOOM! - %s is hit!{/white}{/bgred}' % (self.name)),

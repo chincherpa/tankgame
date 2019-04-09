@@ -1,48 +1,49 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+from colorclass import Color, Windows
+
+from tank import *
+
+Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Windows.
 
 
-#######################################################################################################################
-#######################################################################################################################
-#######################################################################################################################
-#######################################################################################################################
-#######################################################################################################################
-#######################################################################################################################
 ##########################################################################################
-#      FyreFly Messaging, Client Framework
+##      FyreFly Messaging, Client Framework
 ##
-#      Version 0.1a
-#      Copyright (C) 2019 - Aaron Edwards
+##      Version 0.2a
+##      Copyright (C) 2019 - Aaron Edwards
 ##
-#      Email: edwardsaaron94@gmail.com
+##      Email: edwardsaaron94@gmail.com
 ##
-#      This program is built in Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:38:48)
+##      This program is built in Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:38:48)
 ##
 ##########################################################################################
 
 
-####################################### IMPORTS #########################################
+######################################## IMPORTS #########################################
 
-# @Socket is used for establishing a connection to the Server.
-# @_thread/threading is used to handle multiple tasks at once.
-# @os is used only for clearing the screen and exiting if no connection is found.
-# @time is used in the connection phase of the client.
+## @Socket is used for establishing a connection to the Server.
+## @_thread/threading is used to handle multiple tasks at once.
+## @os is used only for clearing the screen and exiting if no connection is found.
+## @time is used in the connection phase of the client.
 import socket
+from _thread import *
 import threading
 import os
 import time
 
-####################################### GLOBALS #########################################
+######################################## GLOBALS #########################################
 
-# HOST is the IP address you'll use to connect to the server.
-#      Conversely this can be changed to accept a user input for an IP address.
-#      This is just 'localhost' to run on your local machine.
-# PORT is the port number the client will go through to connect to the server.
-#      Again this variable can be changed to suit your needs.
-# BUFFER_SIZE is used by socket.recv() to determine the max amount of data
-#      allowed to pass through the socket.
-# CONNECTED is used only to determine if the socket.connect() was successful
+## HOST is the IP address you'll use to connect to the server.
+##      Conversely this can be changed to accept a user input for an IP address.
+##      This is just 'localhost' to run on your local machine.
+## PORT is the port number the client will go through to connect to the server.
+##      Again this variable can be changed to suit your needs.
+## BUFFER_SIZE is used by socket.recv() to determine the max amount of data
+##      allowed to pass through the socket.
+## CONNECTED is used only to determine if the socket.connect() was successful
 
 HOST = 'localhost'
 PORT = 33000
@@ -50,569 +51,169 @@ BUFFER_SIZE = 1024
 ADDR = (HOST, PORT)
 CONNECTED = True
 
-# Creates Socket on load.
+## Creates Socket on load.
 CLIENT = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-######################################## FUNCTIONS #########################################
+######################################### FUNCTIONS #######################################
 
-# Called initially to try and connect to the server
-# Tries connecting 5 times and if it still cannot connect it quits with a message
-# If it does connect then it will start the recieve() thread.
+
+## This function is called whenever a new message is received from the server.
+def clear():
+    ## Checks if the operating system is Windows. If not it uses the other variant.
+    if os.name == 'nt':
+        _ = os.system('cls')
+    else:
+        _ = os.system('clear')
+
+
+## Called initially to try and connect to the server
+## Tries connecting 5 times and if it still cannot connect it quits with a message
+## If it does connect then it will start the recieve() thread.
 def connect_to_server(count):
-    # Connection Status
+    ## Connection Status
     connected = False
 
-    # Tries to connect to the server, If it connects fine, the connected status will now be True.
+    ## Tries to connect to the server, If it connects fine, the connected status will now be True.
     try:
         CLIENT.connect(ADDR)
         connected = True
 
-    # If the client fails to connect to the server, it will try 5 more times.
-    # Each time it will wait for one second to act as a 'time buffer' so if the
-    # Server came online in that time, it can connect.
+    ## If the client fails to connect to the server, it will try 5 more times.
+    ## Each time it will wait for one second to act as a 'time buffer' so if the
+    ## Server came online in that time, it can connect.
     except:
         if count != 6:
-            print(f"[*] Could not contact FyreFly Server, Try {count}/5\n")
+            print("[*] Could not contact the Tankgame Server, Try {}/5\n".format(count))
             count += 1
             time.sleep(1)
             connect_to_server(count)
 
-        # This will exit the program after 5 attempts to connect have been made.
+        ## This will exit the program after 5 attempts to connect have been made.
         else:
             print(
-                '[*] Could not contact the FyreFly Server at this time.\n[*] The server may be offline or down for maintenance\n[*] Sorry for the inconvenience.')
+                '[*] Could not contact the Tankgame Server at this time.\n[*] The server may be offline or down for maintenance\n[*] Sorry.')
             os.sys.exit()
 
-    # If connection status is True, then a new thread is created to listen to the server
-    # For instructions on what to do.
+    ## If connection status is True, then a new thread is created to listen to the server
+    ## For instructions on what to do.
     if connected:
-        print("[*] Connected to FyreFly Messaging Server.")
-        input('[*] Press enter to continue...')
+        print("[*] Connected to the Tankgame Server.")
+        time.sleep(2)
+        # input('[*] Press enter to continue...')
         RECEIVE_THREAD = threading.Thread(target=receive)
         RECEIVE_THREAD.start()
 
 
-# This thread handles the task of receiving messages from the server/other clients.
+## This thread handles the task of receiving messages from the server/other clients.
 def receive():
-    # Just makes sure the client is connected to the server.
+    ## Just makes sure the client is connected to the server.
     if CONNECTED:
 
-        # This creates a buffer of all the messages received by the server.
+        ## This creates a buffer of all the messages received by the server.
         MESSAGE_LOG = ''
 
-        # This creates a new thread for sending messages and also starts it.
+        ## This creates a new thread for sending messages and also starts it.
         SEND_THREAD = threading.Thread(target=send_msg)
         SEND_THREAD.start()
 
-        # Always checks to see if a message is received from the server.
+        ## Always checks to see if a message is recieved from the server.
         while True:
 
-            # This tries to listen for a message from the server
+            ## This tries to listen for a message from the server
             try:
-                # This gets the message and then adds it to the message buffer.
+                ## This gets the message and then adds it to the message buffer.
                 message = CLIENT.recv(BUFFER_SIZE).decode()
                 MESSAGE_LOG += message
 
-                # This checks to see if the messaged typed is not the <quit> request
-                # Command. If it isn't then it clears the screen and prints the entirety
-                # Of the message buffer.
+                ## This checks to see if the messaged typed is not the <quit> request
+                ## Command. If it isnt then it clears the screen and prints the entirety
+                ## Of the message buffer.
                 if message != '<quit>':
-                    os.system('cls')
+                    clear()
                     print(MESSAGE_LOG)
 
-                # This states that if the client does want to send a <quit> request,
-                # It will close the socket and exit this thread.
+                ## This states that if the client does want to send a <quit> request,
+                ## It will close the socket and exit this thread.
                 else:
                     CLIENT.close()
                     break
 
-            # Possible client has left the chat
+            ## Possible client has left the chat
             except OSError:
                 break
     else:
         pass
 
 
-def send_msg(message):
-    try:
-        CLIENT.send(message.encode())
-    except:
-        print("Connection to server lost")
-        return 'connection_lost'
+## This thread is used to handle the task of sending messages to the chat room.
+def send_msg():
+    ## Is always asking for an input
+    while True:
+
+        ## Get message
+        message = input(">> ")
+
+        ## Try and send the message to the server.
+        try:
+            ## If the message is not a <quit> request, it will send the contents of
+            ## The message to the server and then wait for another input.
+            if message != '<quit>':
+                CLIENT.send(message.encode())
+
+            ## If it is a <quit> request, send it off and then quit this thread.
+            else:
+                CLIENT.send(message.encode())
+                break
+
+        ## This will only be displayed after the server has Acknowledged the <quit> request
+        ## Or if the server has been shutdown while the client is still connected.
+        except:
+            print("Connection to server lost")
+            break
 
 
-# Clear Screen and Starts the connection test to see if the server is online.
+## Clear Screen and Starts the connection test to see if the server is online.
 def Main():
-    os.system('cls')
+    clear()
     connect_to_server(1)
 
 
+
+
+
 #######################################################################################################################
 #######################################################################################################################
 #######################################################################################################################
 #######################################################################################################################
 #######################################################################################################################
 
-import sys
-import os
-from time import sleep
-import random
-
-from terminaltables import SingleTable
-from colorclass import Color, Windows
-
-from tank import *
-
-Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Windows.
-
-# TODO: Shop - Done
-# TODO: dead tanks can't play - Done
-# TODO: vs. Computer - Done - - malfunction missing - Done
-# TODO: 2 Players
-# TODO: player chooses name
-# TODO: choose from predefined tanks
-# TODO: dodging
-# TODO: network
-
-'''
-?????
- - Cap malfunction ?
-'''
 
 
-def get_alive_tanks():
-    c = 0
-    for tank in tanks.keys():
-        c += tanks[tank].alive
-    return c
+
+    # players = input('\nHow many Player?  ')
 
 
-def spinning_cursor(duration, value=None):
-    for _ in range(duration):
-        for cursor in '|/-\\':
-            sleep(0.1)
-            sys.stdout.write(f'\r{cursor} {value}')
-            sys.stdout.flush()
-    print('\n')
 
-
-def represents_int(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
-
-def shoot(active, target):
-    print(f'{active.name} is aiming at {target.name}\n')
-    spinning_cursor(4, 'Calculating...')
-    print(f'{active.name} shoots.....\n')
-
-    #################################
-    # Check if tank has a malfunction
-    sleep(1)
-    malfunction = random.randint(1, 101)
-    if malfunction <= active.malfunction:
-        print(f'Oh no, {active.name} has a malfunction :(\n')
-        return 'malfunction'
-
-    ####################
-    # Check if tank hits
-    treffer = random.randint(1, 101)
-    spinning_cursor(3, 'The projectile flies...')
-    if treffer <= active.miss:
-        print(Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 20))
-        print(Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 7),
-              Color('{bgmagenta}{white}MISS{/white}{/bgmagenta}'),
-              Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 7))
-        print(Color('{bgmagenta}{white}X{/white}{/bgmagenta}' * 20))
-        sleep(2)
-        return 'miss'
-    else:
-        return 'hit'
-
-
-items = {   # 'Item', 'effect', 'value', 'Price', parameter
-    '0': ('Cancel', 'Close shop'),
-    '1': ('Armor+10', 'Increase armor',    10, 3, 'armor'),
-    '2': ('Armor+20', 'Increase armor',    20, 5, 'armor'),
-    '3': ('Ammo+2', 'Ammo',                 2, 3, 'ammo'),
-    '4': ('Repair', 'Decrease malfunction', 1, 2, 'malfunction'),
-    '5': ('item5', 'effect5',               1, 100, 'param5'),
-}
-
-
-def shop(buyer):
-    print('\n')
-    print(str(buyer), '\n')
-    try:
-        shop_table = [['#', 'Item', 'Effect', ' Value', 'Price'],                               # Header
-                      ['1', items['1'][0], items['1'][1], items['1'][2], items['1'][3]],        # Armor+10
-                      ['2', items['2'][0], items['2'][1], items['2'][2], items['2'][3]],        # Armor+20
-                      ['3', items['3'][0], items['3'][1], items['3'][2], items['3'][3]],        # Ammo+2
-                      ['4', items['4'][0], items['4'][1], items['4'][2], items['4'][3]],        # item4
-                      ['', '', '', ''],                                                         # item5
-                      ['0', items['0'][0], items['0'][1]]]                                      # Cancel
-
-        shop_table_instance = SingleTable(shop_table, 'Shop')
-        # for i in range(2, 60):
-        #     shop_table_instance.justify_columns[i] = 'center'
-        print(shop_table_instance.table)
-    except KeyError as e:
-        print('------------------------------------------------')
-        print(f'Error: {e.name}')
-        print('------------------------------------------------')
-
-    item = input('What do you want to buy?  ')
-    print('')
-
-    if item in '01234':
-        if item == '0':
-            print('Cancel...')
-            return False
-        elif items[item][3] <= buyer.credits:
-            print(f'{buyer.name} buys {items[item][0]} for {items[item][3]} credits\n')
-            sleep(2)
-            # '1': ('Armor+10', 'Increase armor', 10, 3),
-            # '2': ('Armor+20', 'Increase armor', 20, 5),
-            # '3': ('Shell+2', '2 shells', 2, 3),
-            if item == '1':                    # 10 armor
-                buyer.armor += items[item][2]
-                print(f'{buyer.name} increased his armor by 10.\n')
-            elif item == '2':                  # 20 armor
-                buyer.armor += items[item][2]
-                print(f'{buyer.name} increased his armor by 20.\n')
-            elif item == '3':                  # 2 shells
-                buyer.ammo += items[item][2]
-                print(f'{buyer.name} gets 2 shells.\n')
-            elif item == '4':                  # 2 shells
-                buyer.malfunction -= items[item][2]
-                print(f'{buyer.name} decreased his propability to malfunc by 1.\n')
-
-            buyer.credits -= items[item][3]
-            sleep(3)
-            return True
-        else:
-            print(f'Not enough credits to buy {items[item][0]}!')
-            print(f'{items[item][0]} costs {items[item][3]} credits.')
-            print(f'You have {buyer.credits} credits.\n')
-            return False
-    else:
-        print('Item does ot exist!')
-        return False
-
-
-##################
-##### Instructions
-skip = not True
-if not skip:
-    print('\n\nInstructions:\n\n'
-          'Every tank has these attributes:\n'
-          '  - name           : Name of the tank/player\n'
-          '  - armor          : amount of armor, decreased (-damage) when hit (min = 0)\n'
-          '  - ammo           : amount of shells, -1 per shot\n'
-          '  - power          : damage per shell\n'
-          '  - alive          : is tank alive?, starts with TRUE\n'
-          '  - dmg_mitigation : Mitigation of incoming damage, -1 per hit (min = 0)\n'
-          '  - credits        : amount of credits, starts with ' + str(SETTINGS['credits']) + '\n'
-          '\n'
-          '  --- SETTINGS ---\n'
-          '  - miss           : tanks can miss by ' + str(SETTINGS['probability_to_miss']) + '%\n'
-          '  - malfunction    : tanks can have malfunction by ' + str(
-        SETTINGS['probability_of_malfunction']) + '%, increased by 1 when hit\n\n'
-          )
-
-    input('Press ENTER to start...')
-else:
-    print('\n\nInstructions skipped\n')
-
-mode = False
-pvp = False
-pvc = False
-while not mode:
-    mode = input('\nPlayer vs. [P]layer or [C]omputer?  ')
-    if mode.lower() == 'p':
-        pvp = True
-        tanks = {     # NAME    armor|ammo|power|dmg_mitigation %
-            '1': Tank('Björn',  10,  10,  12,   15),
-            '2': Tank('Lutz',   50,   13,  12,   18),
-            '3': Tank('Martin', 100,  10,  13,   16),
-        }
-    elif mode.lower() == 'c':
-        pvc = True
-        playersturn = True
-        playersname = input('\nHow do you want to be called?  ')
-        tanks = {     # NAME      armor|ammo|power|dmg_mitigation %
-            'p': Tank(playersname, 120,  10,  12,   15),
-            'c': Tank('Computer',  90,  13,  12,   18),
-        }
-        player_tank = tanks['p']
-        computer_tank = tanks['c']
-    else:
-        mode = False
-
-for tank in tanks.keys():
-    print(str(tanks[tank]))
-    print('\n')
-
-alive_tanks = get_alive_tanks()
-
-ltanks = []
-for tank in tanks.keys():
-    ltanks.append(tanks[tank].name)
-
-while alive_tanks:
-    # print(f'alive_tanks: {alive_tanks}')
-    # print(f'mode: {mode}')
-    # print(f'pvp: {pvp}')
-    # print(f'pvc: {pvc}')
-    # print(f'playersturn: {playersturn}')
-    # print('\n')
-
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-    c = 0
-    for tank in tanks.keys():
-        c += tanks[tank].alive
-
-    #############################
-    ##### Create table with tanks
-    tank_table = [['#', 'Name', 'Armor', 'Ammo', 'Power', 'Dmg red.', 'Miss', 'Malf.', 'Credits']]
-    counter = 1
-    for tank in tanks.keys():
-        if tanks[tank].alive:
-            name = Color('{autogreen}{}{/autogreen}').format(tanks[tank].name)
-        else:
-            name = Color('{autored}{}{/autored}').format(tanks[tank].name)
-
-        armor = tanks[tank].armor
-        if tanks[tank].armor < 51:
-            armor = Color('{autoyellow}{}{/autoyellow}').format(tanks[tank].armor)
-        if tanks[tank].armor < 26:
-            armor = Color('{autored}{}{/autored}').format(tanks[tank].armor)
-
-        tank_table.append(
-            [counter, name, armor, tanks[tank].ammo, tanks[tank].power, tanks[tank].dmg_mitigation, tanks[tank].miss,
-             tanks[tank].malfunction, tanks[tank].credits])
-        counter += 1
-    table_instance = SingleTable(tank_table, 'Tanks')
-    for i in range(2, 60):
-        table_instance.justify_columns[i] = 'center'
-    print(table_instance.table)
-
-    if pvp:
-        ############ START #############
-        # get active and passive tanks #
-
-        #################
-        # get active tank
-        active = input('Active tank?  ')
-
-        #######################################
-        # The player entered a number of a tank
-        if represents_int(active[0]):
-            if len(active) == 1:
-                if active[0] in tanks.keys():
-                    if not tanks[active[0]].alive:
-                        print('Tank is already destroyed!')
-                        sleep(1)
-                        print('Choose again')
-                        sleep(2)
-                        continue
-                    else:
-                        active_tank = tanks[active[0]]
-                else:
-                    print('Tank does not exist!')
-                    sleep(3)
-                    continue
-
-                print(f'\n-> {active_tank.name}\n')
-
-                action = input('Shoot an [E]nemy or go to [S]hop?  ')
-
-                if action.lower() == 's':
-                    shop(active_tank)
-                    sleep(2)
-                    continue
-                elif action.lower() == 'e':
-                    ##################
-                    # get passive tank
-                    passive = input('Target?  ')
-
-                    if passive in tanks.keys():
-                        passive_tank = tanks[passive]
-                        print(f'\n-> {passive_tank.name}\n')
-                    else:
-                        print('Tank does not exist!')
-                        sleep(3)
-                        continue
-                    if active == passive:
-                        print('Tanks cannot shoots at themselves')
-                        sleep(3)
-                        continue
-                    if not passive_tank.alive:
-                        print('Tank is already destroyed!')
-                        sleep(3)
-                        continue
-                else:
-                    print('Wrong input!')
-                    sleep(3)
-                    continue
-
-            elif len(active) == 2:
-                # input = 1s     1 to shop
-                if active[0] in tanks.keys() and active[1] == 's':
-                    if not tanks[active[0]].alive:
-                        print('Tank is already destroyed!')
-                        sleep(1)
-                        print('Choose again')
-                        continue
-                    else:
-                        active_tank = tanks[active[0]]
-                        shop(active_tank)
-                        sleep(2)
-                        continue
-
-                # input = 12     1 shoots 2
-                if active[0] in tanks.keys() and active[1] in tanks.keys():
-                    if not tanks[active[0]].alive or not tanks[active[1]].alive:
-                        print('One of these tanks is already destroyed!')
-                        sleep(1)
-                        print('Choose again')
-                        sleep(2)
-                        continue
-                    if active[0] == active[1]:
-                        print('Tanks cannot shoots at themselves')
-                        sleep(2)
-                        continue
-                    else:
-                        active_tank = tanks[active[0]]
-                        passive_tank = tanks[active[1]]
-                else:
-                    print('One of these tanks does not exist!')
-                    sleep(1)
-                    print('Choose again')
-                    sleep(2)
-                    continue
-
-            # elif len(active) == 3:
-            #     # input = 1e3    1 shoots 3
-            #     if active[0] in tanks.keys() and active[1].lower() == 'e' and active[2] in tanks.keys():
-            #         if not tanks[active[0]].alive or not tanks[active[2]].alive:
-            #             print('One of these tanks is already destroyed!')
-            #             sleep(1)
-            #             print('Choose again')
-            #             sleep(2)
-            #             continue
-            #         if active[0] == active[2]:
-            #             print('Tanks cannot shoots at themselves')
-            #             sleep(2)
-            #             continue
-            #         else:
-            #             active_tank = tanks[active[0]]
-            #             passive_tank = tanks[active[2]]
-            #     else:
-            #         print('Wrong input!')
-            #         sleep(3)
-            #         continue
-            else:
-                print('Wrong input!')
-                sleep(3)
-                continue
-        else:
-            print('Wrong input!')
-            sleep(3)
-            continue
-
-        # get active and passive tanks #
-        ############# END ##############
-
-        shot = shoot(active_tank, passive_tank)
-        # Tank has a malfunction
-        if shot == 'malfunction':
-            sleep(2)
-            continue
-        # Tank missed the enemy
-        elif shot == 'miss':
-            sleep(1)
-            continue
-        # Tank hits
-        else:
-            active_tank.fire_at(passive_tank)
-
-    elif pvc:
-        # It's player's turn
-        if playersturn:
-            print(f"\nIt's {player_tank.name}'s turn")
-            sleep(0.5)
-            action = input('\nShoot the [E]nemy or go to the [S]hop?  ')
-            if action.lower() == 'e':
-                print('You shoot...')
-                shot = shoot(player_tank, computer_tank)
-                # Tank has a malfunction
-                if shot == 'malfunction':
-                    playersturn = not playersturn
-                    sleep(2)
-                    continue
-                # Tank missed the enemy
-                if shot == 'miss':
-                    playersturn = not playersturn
-                    sleep(1)
-                    continue
-                # Tank hits
-                else:
-                    player_tank.fire_at(computer_tank)
-            elif action.lower() == 's':
-                shop(player_tank)
-                sleep(2)
-                playersturn = not playersturn
-                continue
-            else:
-                print('Unknown input!')
-                sleep(3)
-                continue
-        # It's computer's turn
-        else:
-            print("\nIt's computer's turn\n")
-            sleep(1)
-            shot = shoot(computer_tank, player_tank)
-            # Tank has a malfunction
-            if shot == 'malfunction':
-                playersturn = not playersturn
-                sleep(2)
-                continue
-            # Tank missed the enemy
-            if shot == 'miss':
-                playersturn = not playersturn
-                sleep(1)
-                continue
-            # Tank hits
-            else:
-                computer_tank.fire_at(player_tank)
-
-        # print(f'playersturn: {playersturn}')
-        playersturn = not playersturn
-        # print(f'playersturn: {playersturn}')
-        # input('weiter...')
-    else:
-        print('ERROR')
-        print('this should never occure')
-
-    # number of alive tanks minus 1 => last one is the winner
-    alive_tanks = get_alive_tanks() - 1
-    sleep(2)
-
-for tank in tanks.values():
-    if tank.alive:
-        print()
-        print(f'{tank.name} is the winner - WOOHOO')
-        print()
+    # active = input('Active tank?  ')
+    #
+    # action = input('Shoot an [E]nemy or go to [S]hop?  ')
+    #
+    # if action.lower() == 's':
+    #     print('Go to shop')
+    # elif action.lower() == 'e':
+    #     print('shoot')
+    # else:
+    #     print('Wrong input!')
+    #     sleep(1)
 
 
 
 
+
+
+#######################################################
 if __name__ == '__main__':
     Main()
+
 
