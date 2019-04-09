@@ -17,15 +17,10 @@ Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Wi
 # TODO: dead tanks can't play - Done
 # TODO: vs. Computer - Done - - malfunction missing - Done
 # TODO: 2 Players
-# TODO: player chooses name
+# TODO: player chooses name - Done
 # TODO: choose from predefined tanks
 # TODO: dodging
 # TODO: network
-
-'''
-?????
- - Cap malfunction ?
-'''
 
 
 def get_alive_tanks():
