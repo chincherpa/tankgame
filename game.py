@@ -472,7 +472,8 @@ while alive_tanks:
                 continue
         # It's computer's turn
         else:
-            print("It's computer's turn")
+            print("It's computer's turn\n")
+            print('Computer shoots...')
             shot = shoot(computer_tank, player_tank)
             # Tank has a malfunction
             if shot == 'malfunction':
