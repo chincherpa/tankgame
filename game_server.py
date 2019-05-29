@@ -410,6 +410,12 @@ def game(*args):
     print(*args, sep='\n')
     global tanks
 
+    # tanks = {     # NAME   armor|ammo|power|dmg_mitigation %
+    #     '1': Tank(args[0], 100,  10,  15,   15),
+    #     '2': Tank(args[1], 100,  10,  15,   15),
+    #     '3': Tank(args[2], 100,  10,  15,   15),
+    # }
+
     tanks = {}
     num = 0
     for player in list_of_players:
