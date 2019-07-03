@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-ANZAHL = 99999
+ANZAHL = 10000
 
 import os
 from random import randint
@@ -91,6 +91,7 @@ def get_action():
     return input('Shoot an [E]nemy, go to [S]hop or do [N]othing (+ 1 credit)?  ')
 
 for j in range(1, 5):
+    loop = 0
     playerwins = 0
     computerwins = 0
     predefined_tank_input = j
@@ -99,6 +100,12 @@ for j in range(1, 5):
     #print(v)
 
     for i in range(ANZAHL):
+        loop += 1
+        
+        if i%1000 == 0:
+            p_com = int((computerwins/loop)*100)
+            p_pla = int((playerwins/loop)*100)
+            print(f'running... {i} ({p_com}:{p_pla}) ')
 
         tanks = {}
 
