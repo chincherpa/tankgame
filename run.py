@@ -2,14 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import os
-from random import randint
+from time import sleep
+import random
 
 from terminaltables import SingleTable
 from colorclass import Windows
 
 from tank import *
 
-Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Windows.
+DEBUG = False
+
+# Does nothing if not on Windows
+Windows.enable(auto_colors=True, reset_atexit=True)
 
 # TODO: Shop - Done
 # TODO: dead tanks can't play - Done
@@ -19,6 +23,7 @@ Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Wi
 # TODO: choose from predefined tanks - DONE
 # TODO: computer gets random tank - DONE
 
+
 # TODO: dodging
 # TODO: network
 
@@ -27,14 +32,14 @@ Windows.enable(auto_colors=True, reset_atexit=True)  # Does nothing if not on Wi
  - Cap malfunction ?
 '''
 
-items = {# 'Item',    'effect',              value,   Price, parameter
+items = {  # 'Item',  'effect',              value,   Price, parameter
     '1': ('Armor+10', 'Increase armor',      10,      3,     'armor'),
     '2': ('Armor+20', 'Increase armor',      20,      5,     'armor'),
     '3': ('Ammo+2',   'Ammo',                 2,      3,     'ammo'),
     '4': ('Repair',   'Decrease malfunction', 1,      2,     'malfunction'),
 }
 
-predefined_tanks = {# Name,  (mod_armor, mod_ammo, mod_power, mod_dmg_mitigation)
+predefined_tanks = {  # Name,(armor, ammo, power, dmg_mitigation)
     '1': ('Heavy Tank',      (135, 13, 15, 15)),
     '2': ('Middle Tank',     (125, 17, 14, 14)),
     '3': ('Light Tank',      (115, 21, 13, 13)),
@@ -59,9 +64,11 @@ def represents_int(s):
 
 def shoot(active, target):
     print(f"\n{active.name} is aiming at {target.name}'s tank!\n")
-    if not DEBUG: spinning_cursor(4, 'Calculating...')
+    if not DEBUG:
+        spinning_cursor(4, 'Calculating...')
     print(f'\n\n{active.name} shoots.....')
-    if not DEBUG: sleep(1)
+    if not DEBUG:
+        sleep(1)
 
     # Check if tank has a malfunction
     malfunction = random.randint(1, 101)
@@ -120,7 +127,8 @@ def shop(player):
                 print(f'\n{player.name} decreased his propability to malfunc by 1.')
 
             player.credits -= items[item][3]
-            if not DEBUG: sleep(2)
+            if not DEBUG:
+                sleep(2)
             return True
         else:
             print(f'\nYou have not enough credits to buy {items[item][0]}!')
@@ -200,14 +208,13 @@ def modify_attributes(player):
 def select_tank():
     print('\nAvailable tanks:\n')
     try:
-        tank_table = [  ['#', 'NAME', 'Armor', 'Ammo', 'Power', 'Damage\nmitigation']]
+        tank_table = [['#', 'NAME', 'Armor', 'Ammo', 'Power', 'Damage\nmitigation']]
         for entry in range(1, len(predefined_tanks) + 1):
             temp = []
             temp = [str(entry), predefined_tanks[str(entry)][0]]
             for i in range(len(predefined_tanks[str(entry)][1])):
                 temp.append(predefined_tanks[str(entry)][1][i])
             tank_table.append(temp)
-
 
         tank_table.append(['-', '---', '---', '---', '---', '---'])
         tank_table.append(['0', 'Cancel', 'Close'])
@@ -243,10 +250,10 @@ def get_4_randoms(sum):
     
     rnd_sum = 0
     while rnd_sum != sum:
-        r1 = randint(0, sum)
-        r2 = randint(0, sum)
-        r3 = randint(0, sum)
-        r4 = randint(0, sum)
+        r1 = random.randint(0, sum)
+        r2 = random.randint(0, sum)
+        r3 = random.randint(0, sum)
+        r4 = random.randint(0, sum)
         rnd_sum = r1 + r2 + r3 + r4
 
     return r1, r2, r3, r4
@@ -283,7 +290,7 @@ def get_action():
 
 
 ##################
-##### Instructions
+# Instructions
 skip = True
 if not skip:
     print('\n\nInstructions:\n\n'
@@ -300,7 +307,7 @@ if not skip:
           '  - miss           : tanks can miss by ' + str(SETTINGS['probability_to_miss']) + '%\n'
           '  - malfunction    : tanks can have malfunction by ' + str(
         SETTINGS['probability_of_malfunction']) + '%, increased by 1 when hit\n\n'
-          )
+        )
 
     input('Press ENTER to start...')
 else:
@@ -332,10 +339,10 @@ while not mode:
         for counter, playersname in enumerate(players):
             choice = None
             while choice is None:
-                choice = input(f'\n{playersname}: [S]elect predefined tank or [M]odify your own?  ')
+                choice = input(f'\n{playersname}: Select [P]redefined tank or [M]odify your own?  ')
                 if choice.lower() == 'm':
                     attributes = modify_attributes(playersname)
-                elif choice.lower() == 's':
+                elif choice.lower() == 'p':
                     attributes = select_tank()
                     if attributes is False:
                         choice = None
@@ -359,10 +366,10 @@ while not mode:
 
         choice = None
         while choice is None:
-            choice = input('\n[S]elect predefined tank or [M]odify your own?  ')
+            choice = input('\nSelect [P]redefined tank or [M]odify your own?  ')
             if choice.lower() == 'm':
                 attributes = modify_attributes(playersname)
-            elif choice.lower() == 's':
+            elif choice.lower() == 'p':
                 attributes = select_tank()
                 if attributes is False:
                     choice = None
@@ -581,7 +588,8 @@ while alive_tanks:
         # It's player's turn
         if playersturn:
             print(f"\nIt's {player_tank.name}'s turn\n")
-            if not DEBUG: sleep(0.5)
+            if not DEBUG:
+                sleep(0.5)
 
             if DEBUG:
                 action = 'e'
@@ -593,16 +601,19 @@ while alive_tanks:
                 shot = shoot(player_tank, computer_tank)
                 # Tank has a malfunction
                 if shot == 'malfunction':
-                    if not DEBUG: sleep(2)
+                    if not DEBUG:
+                        sleep(2)
                 # Tank missed the enemy
                 if shot == 'miss':
-                    if not DEBUG: sleep(1)
+                    if not DEBUG:
+                        sleep(1)
                 # Tank hits
                 else:
                     player_tank.fire_at(computer_tank)
             elif action.lower() == 's':
                 shop(player_tank)
-                if not DEBUG: sleep(2)
+                if not DEBUG:
+                    sleep(2)
                 # Player can shoot after shop
             elif action.lower() == 'n':
                 dont_shoot(player_tank)
@@ -610,7 +621,8 @@ while alive_tanks:
                 print('\nUnknown input!')
                 sleep(0.5)
                 print('\nTry again...')
-                if not DEBUG: sleep(1)
+                if not DEBUG:
+                    sleep(1)
 
             if action.lower() in 'en':
                 # Player can shoot after shop
@@ -624,12 +636,14 @@ while alive_tanks:
             # Tank has a malfunction
             if shot == 'malfunction':
                 playersturn = True
-                if not DEBUG: sleep(1)
+                if not DEBUG:
+                    sleep(1)
                 continue
             # Tank missed the enemy
             if shot == 'miss':
                 playersturn = True
-                if not DEBUG: sleep(0)
+                if not DEBUG:
+                    sleep(0)
                 continue
             # Tank hits
             else:
@@ -643,7 +657,8 @@ while alive_tanks:
 
     # number of alive tanks minus 1 => last one is the winner
     alive_tanks = get_alive_tanks() - 1
-    if not DEBUG: sleep(2)
+    if not DEBUG:
+        sleep(2)
 
 for tank in tanks.values():
     if pvc:

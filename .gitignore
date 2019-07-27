@@ -1,0 +1,8 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+.idea
+tankgame.bat
+test.py
+game_client.py
+game_server.py
+backup/

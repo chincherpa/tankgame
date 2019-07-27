@@ -38,13 +38,13 @@ class Tank:
     - ARMORSTART        : armor at the beginning, to calculate percent
     - dmg_mitigation    : Mitigation of incoming damage, -1 per hit
 ######    - size              : tanks have a size/weight (heavy = strong, more dmg_mitigation -> low ammo, "slow")
-    
+
     - miss              : tanks can miss, initvalue in settings
     - malfunction       : tanks can have a malfunction, initvalue in settings
     - credits           : amount of credits, +1 per hit, initvalue in settings
 
     + dodge             :
-    
+
     """
 
     def __init__(self, name, armor, ammo, power, dmg_mitigation):
@@ -79,7 +79,8 @@ class Tank:
         # Check if tank hits
         treffer = random.randint(1, 101)
         print('')
-        if not DEBUG: print_slow('/' + chr(172) * 20 + '\\')
+        if not DEBUG:
+            print_slow('/' + chr(172) * 20 + '\\')
         if treffer <= self.miss:
             self.misses += 1
             print('\n')
@@ -88,7 +89,8 @@ class Tank:
                   Color('{bgmagenta}{white}MISS{/white}{/bgmagenta}'),
                   Color('{bgmagenta}{white} {/white}{/bgmagenta}' * 8), sep='')
             print(Color('{bgmagenta}{white} {/white}{/bgmagenta}' * 20))
-            if not DEBUG: sleep(1)
+            if not DEBUG:
+                sleep(1)
         else:
             self.ammo -= 1
             self.credits += 1
@@ -103,7 +105,7 @@ class Tank:
         self.armor -= damage
         if self.armor < 0:
             self.armor = 0
-        
+
         # dmg mitigation is decreased by 1
         self.dmg_mitigation -= 1
         if self.dmg_mitigation < 0:
@@ -128,7 +130,8 @@ class Tank:
             self.explode()
 
     def explode(self):
-        if not DEBUG: sleep(2)
+        if not DEBUG:
+            sleep(2)
         # tank is destroyed
         self.alive = False
         x = int((70 - len('KAWOOM! - %s explodes!' % (self.name))) / 2)
@@ -138,7 +141,8 @@ class Tank:
               Color('{bgmagenta}{white}KAWOOM! - %s explodes!{/white}{/bgmagenta}' % (self.name)),
               Color('{bgmagenta}{white} {/white}{/bgmagenta}') * x, sep='')
         print(Color('{bgmagenta}{white} {/white}{/bgmagenta}' * 70))
-        if not DEBUG: sleep(1)
+        if not DEBUG:
+            sleep(1)
         print(Color('{bgmagenta}{white} {/white}{/bgmagenta}' * y),
               Color('{bgmagenta}{white}KAWOOM! - %s is destroyed!{/white}{/bgmagenta}' % (self.name)),
               Color('{bgmagenta}{white} {/white}{/bgmagenta}') * y, sep='')
