@@ -13,6 +13,7 @@ from tank import *
 
 DEBUG = False
 
+# huhu
 # TODO: Shop - Done
 # TODO: dead tanks can't play - Done
 # TODO: vs. Computer - Done - - malfunction missing - Done
