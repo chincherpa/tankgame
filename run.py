@@ -7,7 +7,7 @@ from time import sleep
 import random
 
 from terminaltables import SingleTable
-from crayons import green, yellow, red
+from crayons import yellow, red  # green, 
 
 from tank import *
 
@@ -19,17 +19,16 @@ DEBUG = False
 # TODO: player chooses name - DONE
 # TODO: choose from predefined tanks - DONE
 # TODO: computer gets random tank - DONE
+# TODO: 2 Players - Done
 
-
-# TODO: 2 Players -
 # TODO: dodging
 # TODO: network
 
-items = {  # 'Item',  'effect',        value,   Price, parameter
-  '1': ('Armor+10', 'Increase armor',    10,    3,   'armor'),
-  '2': ('Armor+20', 'Increase armor',    20,    5,   'armor'),
-  '3': ('Ammo+2',   'Ammo',         2,    3,   'ammo'),
-  '4': ('Repair',   'Decrease malfunction', 1,    2,   'malfunction'),
+items = {  # 'Item',  'effect',         value, Price, parameter
+  '1': ('Armor+10', 'Increase armor',      10,     3, 'armor'),
+  '2': ('Armor+20', 'Increase armor',      20,     5, 'armor'),
+  '3': ('Ammo+2',   'Ammo',                 2,     3, 'ammo'),
+  '4': ('Repair',   'Decrease malfunction', 1,     2, 'malfunction'),
 }
 
 predefined_tanks = {  # Name,(armor, ammo, power, dmg_mitigation)
