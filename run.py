@@ -11,6 +11,8 @@ from crayons import yellow, red  # green,
 
 from tank import *
 
+#GITHUB-TEST
+
 DEBUG = False
 
 # huhu
