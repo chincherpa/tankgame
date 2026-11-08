@@ -1,0 +1,19 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Hauptfenster: nur Spielstände unter $APPDATA/saves lesen, schreiben und löschen",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:allow-exists",
+    "fs:allow-mkdir",
+    "fs:allow-read-dir",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "fs:allow-remove",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$APPDATA" }, { "path": "$APPDATA/saves" }, { "path": "$APPDATA/saves/**" }]
+    }
+  ]
+}

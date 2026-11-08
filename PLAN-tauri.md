@@ -125,12 +125,52 @@ Optik: Canvas ist nicht nötig, DOM + CSS-Animationen reichen für ein rundenbas
 
 Grobe Aufwandsschätzung: Schritte 1–5 ca. 1–2 Tage, 6–9 ca. 2–3 Tage, Rest nach Anspruch an Optik.
 
-## 8. Offene Entscheidungen
+## 8. Entscheidungen (getroffen)
 
-1. **Svelte oder Vanilla-TS?** (Plan geht von Svelte aus.)
-2. **Python-Version behalten?** Parallel pflegen ist doppelter Aufwand – Vorschlag: nach Schritt 4 einfrieren.
-3. **Spielregeln unverändert portieren** oder gleich nachschärfen (z. B. KI kauft bei 0 Munition Nachschub statt nur zu warten)?
-4. **Hotseat-Mehrspieler reicht**, oder später Netzwerk-Multiplayer? (Wäre der Punkt, an dem Option B / Rust-Engine attraktiv wird.)
+1. **Frontend:** Svelte 5 + TypeScript.
+2. **Python-Version:** eingefroren unter `python/`, wird nicht weiter gepflegt.
+3. **Regeln:** nachgebessert (siehe unten).
+4. **Mehrspieler:** nur am selben Rechner (Hotseat) – Engine bleibt in TypeScript.
+
+### Regeländerungen gegenüber der Python-Version
+
+| Bereich | Python | Neu | Grund |
+|---|---|---|---|
+| KI-Erkennung | Name == „Computer“ | Flag `isComputer` je Platz | Bug; außerdem beliebige Mischung Mensch/KI |
+| Zielwahl | „nächster Spieler“, auch zerstörte | Klick auf lebenden Gegner | Bug bei >2 Spielern |
+| Startspieler | immer Spieler 1 | ausgelost | Vorteil für den ersten Zug |
+| Ausweichen | 5 % für alle | 5 % + 2 % je 3 Punkte Start-Panzerung unter 120 (Schwer 5 %, Mittel 11 %, Leicht 21 %, Ultraleicht 31 %) | Schwerer Panzer gewann 95 % gegen Ultraleicht |
+| Munition +2 | 3 Credits | 4 Credits | Munition soll knapp sein, sonst zählt der Munitionsvorrat leichter Panzer nicht |
+| Reparatur | −1 % Fehlfunktion | −3 % | −1 % war wertlos (jeder Treffer +1 %) |
+| Abschuss | – | +3 Credits Bonus | Anreiz im Mehrspieler |
+| Mindestschaden | 0 möglich | 1 | |
+| KI | schießt immer, sonst warten | kauft Munition wenn leer, repariert ab 30 % Fehlfunktion, zielt auf den schnellsten Abschuss | |
+| Schießen ohne Munition | Rückfrage „Im Shop kaufen?“ | Button deaktiviert + Tooltip | |
+
+Balance-Messung (KI gegen KI, je 1 500 Partien, Siegquote Zeile gegen Spalte), nach den Änderungen:
+
+|  | Schwer | Mittel | Leicht | Ultral. |
+|---|---|---|---|---|
+| **Schwer** | 48 % | 40 % | 64 % | 70 % |
+| **Mittel** | 61 % | 52 % | 63 % | 67 % |
+| **Leicht** | 36 % | 37 % | 50 % | 58 % |
+| **Ultraleicht** | 32 % | 34 % | 43 % | 50 % |
+
+Vorher lagen die Extreme bei 5 %/95 %.
+Bekannte Schwäche (aus dem Original übernommen): Bei eigenen Panzern ist 1 Punkt Feuerkraft deutlich mehr wert als 5 Panzerung – „Glaskanonen“ sind stark. Kandidat für eine spätere Runde.
+
+## Umsetzungsstand
+
+| # | Schritt | Status |
+|---|---|---|
+| 1 | Python nach `python/`, Tauri-2-/Svelte-Projekt | ✅ |
+| 2–3 | Engine (`src/engine/`) als reine Funktionen, KI | ✅ |
+| 4 | Tests portiert + erweitert (Vitest, 46 Tests) | ✅ |
+| 5–8 | UI: Menü, Aufstellung, Panzer-Baukasten, Kampf mit Klick-Zielen, Shop, Animationen, Spielende | ✅ |
+| 9 | Speichern/Laden/Löschen über `plugin-fs`, Rechte auf `$APPDATA/saves` beschränkt | ✅ |
+| 10 | Anleitung, Icons | ✅ (Sounds offen) |
+| 11 | CI (`ci.yml`) und Release-Workflow (`release.yml`, Tag `v*`) | ✅ angelegt, noch nicht auf GitHub gelaufen |
+| 12 | README | ✅ |
 
 ## 9. Voraussetzungen für die Entwicklung
 
