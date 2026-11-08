@@ -8,7 +8,7 @@ Rundenbasiertes Panzer-Kampfspiel als Desktop-App (Tauri 2 + Svelte 5), komplett
 - Vordefinierte Panzer oder **eigener Panzer** per +/−-Punkteverteilung
 - **Zielen per Klick** auf den gegnerischen Panzer, animierte Schüsse, Treffer und Explosionen
 - **Shop** für Panzerung, Munition und Reparatur
-- **Speichern/Laden** von Spielständen
+- **Speichern/Laden/Löschen** von Spielständen
 - Tastatur optional: `S` Schießen, `B` Shop, `N` Warten, `Esc` Abbrechen
 
 ## Entwicklung
@@ -54,6 +54,20 @@ Ausweichchance: 5 % + 2 % je 3 Punkte Start-Panzerung unter 120.
 
 Alle Werte stehen in `src/engine/config.ts`.
 
+## Spielstände
+
+Gespeichert wird über den Button „💾 Speichern“ im Spiel. Die Spielstände liegen als JSON-Dateien im App-Datenordner (`$APPDATA/saves/`), in der Browser-Vorschau (`pnpm dev`) im localStorage des Browsers.
+
+## Ältere Terminal-Version (Python)
+
+Die ursprüngliche Terminal-Version liegt unverändert unter `python/` und wird nicht mehr gepflegt. Sie hat ein eigenes Regelwerk, das von der App abweicht (z. B. Erkennung des Computers über den Namen, Munitionspreis 3).
+
+```bash
+cd python
+pip install -r requirements.txt
+python -m src.main
+```
+
 ## Projektstruktur
 
 ```
@@ -69,6 +83,7 @@ src/
 src-tauri/         # Rust-Shell, Fenster, Berechtigungen (nur $APPDATA/saves)
 tests/engine/      # Vitest
 python/            # ursprüngliche Terminal-Version (eingefroren, nicht mehr gepflegt)
+PLAN-tauri.md      # Portierungsplan und getroffene Entscheidungen
 ```
 
 ## Lizenz
