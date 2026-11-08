@@ -17,7 +17,7 @@ Eine GUI braucht dagegen eine **zustandsbasierte, nicht-blockierende Engine**: A
 
 | Option | Bewertung |
 |---|---|
-| **A) TS-Engine im Frontend** (empfohlen) | Kleine, synchrone Logik ohne Performance-Anforderung; kein IPC pro Klick; Engine auch im Browser testbar (`npm run dev` ohne Rust-Build); Syntax/Denkweise für Python-Entwickler am nächsten. |
+| **A) TS-Engine im Frontend** (empfohlen) | Kleine, synchrone Logik ohne Performance-Anforderung; kein IPC pro Klick; Engine auch im Browser testbar (`pnpm dev` ohne Rust-Build); Syntax/Denkweise für Python-Entwickler am nächsten. |
 | B) Engine in Rust (`#[tauri::command]`) | Saubere Trennung, `cargo test`, aber jeder Klick = IPC-Roundtrip und doppelte Typdefinitionen (Rust ↔ TS, z. B. via `specta`). Lohnt erst bei Online-Multiplayer/Anti-Cheat. |
 | C) Python als Sidecar (PyInstaller) | Bestehender Code bleibt, aber blockierende `input()`-Logik müsste trotzdem komplett umgebaut werden; +30–60 MB Binary, Plattform-Builds mühsam. Nicht empfohlen. |
 
@@ -110,17 +110,17 @@ Optik: Canvas ist nicht nötig, DOM + CSS-Animationen reichen für ein rundenbas
 
 | # | Schritt | Ergebnis / Abnahme |
 |---|---|---|
-| 1 | Python-Code nach `python/` verschieben, Tauri-2-Projekt anlegen (`npm create tauri-app@latest`, Svelte-TS), CI-fähiges `npm run build` | Leeres Fenster startet via `npm run tauri dev` |
+| 1 | Python-Code nach `python/` verschieben, Tauri-2-Projekt anlegen (`pnpm create tauri-app`, Svelte-TS), CI-fähiges `pnpm build` | Leeres Fenster startet via `pnpm tauri dev` |
 | 2 | `engine/config.ts`, `rng.ts` (seedbar, z. B. mulberry32), Typen | Kompiliert, Typen vollständig |
 | 3 | `tank.ts`, `shop.ts`, `game.ts` als reine Funktionen; KI in `ai.ts` | Keine DOM-/Tauri-Imports in `engine/` (per ESLint-Regel erzwungen) |
-| 4 | Python-Tests nach Vitest portieren (47 Tests), mit festem Seed statt `random`-Mocks | `npm test` grün; Verhalten deckungsgleich mit Python |
+| 4 | Python-Tests nach Vitest portieren (47 Tests), mit festem Seed statt `random`-Mocks | `pnpm test` grün; Verhalten deckungsgleich mit Python |
 | 5 | UI-Gerüst: Screen-Router (Menü → Setup → Spiel → Ende), Svelte-Store um `applyAction` | Komplette Partie ohne Animationen per Maus spielbar |
 | 6 | Panzer-Auswahl + Punkteverteilung mit Steppern | Eigener Panzer per Maus erstellbar |
 | 7 | Shop-Modal, Zielauswahl per Klick, deaktivierte Buttons + Tooltips | Keine ungültige Aktion auslösbar |
 | 8 | Event-Animationen + Computerzug-Timing, Überspringen per Klick | Partie fühlt sich „lebendig“ an |
 | 9 | Speichern/Laden/Löschen über `plugin-fs`, Capabilities eingeschränkt | Spielstand übersteht Neustart |
 | 10 | Anleitung-Screen, Icons, Feinschliff, optional Sounds | — |
-| 11 | Release-Build: `npm run tauri build` lokal; optional GitHub Action mit `tauri-apps/tauri-action` für Windows/macOS/Linux | Installer (.msi/.dmg/.AppImage/.deb) |
+| 11 | Release-Build: `pnpm tauri build` lokal; optional GitHub Action mit `tauri-apps/tauri-action` für Windows/macOS/Linux | Installer (.msi/.dmg/.AppImage/.deb) |
 | 12 | README aktualisieren; `python/` entfernen oder als `legacy`-Branch archivieren | — |
 
 Grobe Aufwandsschätzung: Schritte 1–5 ca. 1–2 Tage, 6–9 ca. 2–3 Tage, Rest nach Anspruch an Optik.
@@ -174,7 +174,7 @@ Bekannte Schwäche (aus dem Original übernommen): Bei eigenen Panzern ist 1 Pun
 
 ## 9. Voraussetzungen für die Entwicklung
 
-- Node.js ≥ 20, Rust (stable, via `rustup`)
+- Node.js ≥ 20, pnpm ≥ 10, Rust (stable, via `rustup`)
 - Linux: `libwebkit2gtk-4.1-dev`, `build-essential`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`
 - Windows: WebView2 (bei Win10/11 vorinstalliert), MSVC Build Tools
 - macOS: Xcode Command Line Tools

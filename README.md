@@ -13,17 +13,17 @@ Rundenbasiertes Panzer-Kampfspiel als Desktop-App (Tauri 2 + Svelte 5), komplett
 
 ## Entwicklung
 
-Voraussetzungen: Node.js ≥ 20, Rust (stable) und die
+Voraussetzungen: Node.js ≥ 20, [pnpm](https://pnpm.io) ≥ 10 (z. B. via `corepack enable`), Rust (stable) und die
 [Tauri-Systemabhängigkeiten](https://v2.tauri.app/start/prerequisites/)
 (Linux: `libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev`).
 
 ```bash
-npm install
-npm run tauri dev     # App mit Hot-Reload starten
-npm run dev           # nur Frontend im Browser (Spielstände dann im localStorage)
-npm test              # Engine-Tests (Vitest)
-npm run check         # Typprüfung (svelte-check)
-npm run tauri build   # Installer bauen (.msi/.dmg/.AppImage/.deb …)
+pnpm install
+pnpm tauri dev     # App mit Hot-Reload starten
+pnpm dev           # nur Frontend im Browser (Spielstände dann im localStorage)
+pnpm test          # Engine-Tests (Vitest)
+pnpm check         # Typprüfung (svelte-check)
+pnpm tauri build   # Installer bauen (.msi/.dmg/.AppImage/.deb …)
 ```
 
 ## Spielregeln
