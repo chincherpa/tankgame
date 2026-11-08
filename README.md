@@ -1,114 +1,91 @@
 # 🎮 Tankgame
 
-Ein Terminal-basiertes Panzer-Kampfspiel in Python.
+Rundenbasiertes Panzer-Kampfspiel als Desktop-App (Tauri 2 + Svelte 5), komplett mit der Maus bedienbar.
 
-## 🎯 Features
+## Features
 
-- **PvP-Modus**: 2+ Spieler gegeneinander
-- **PvC-Modus**: Gegen den Computer spielen
-- **Shop-System**: Rüstung, Munition und Reparaturen kaufen
-- **Individuelle Panzer**: Vordefiniert oder selbst konfiguriert
-- **Dodging**: Ausweichen von Angriffen
-- **Speichern/Laden**: Spielstände sichern
+- **Gegen Computer** oder **Mehrspieler am selben Rechner** (2–8 Panzer, jeder Platz Mensch oder KI)
+- Vordefinierte Panzer oder **eigener Panzer** per +/−-Punkteverteilung
+- **Zielen per Klick** auf den gegnerischen Panzer, animierte Schüsse, Treffer und Explosionen
+- **Shop** für Panzerung, Munition und Reparatur
+- **Speichern/Laden/Löschen** von Spielständen
+- Tastatur optional: `S` Schießen, `B` Shop, `N` Warten, `Esc` Abbrechen
 
-## 📋 Voraussetzungen
+## Entwicklung
 
-- Python 3.8+
-- pip
-
-## 🚀 Installation
+Voraussetzungen: Node.js ≥ 20, [pnpm](https://pnpm.io) ≥ 10 (z. B. via `corepack enable`), Rust (stable) und die
+[Tauri-Systemabhängigkeiten](https://v2.tauri.app/start/prerequisites/)
+(Linux: `libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev`).
 
 ```bash
-# Repository klonen
-git clone https://github.com/username/tankgame.git
-cd tankgame
-
-# Abhängigkeiten installieren
-pip install -r requirements.txt
+pnpm install
+pnpm tauri dev     # App mit Hot-Reload starten
+pnpm dev           # nur Frontend im Browser (Spielstände dann im localStorage)
+pnpm test          # Engine-Tests (Vitest)
+pnpm check         # Typprüfung (svelte-check)
+pnpm tauri build   # Installer bauen (.msi/.dmg/.AppImage/.deb …)
 ```
 
-## 🎮 Spielstart
+## Spielregeln
+
+| Aktion | Wirkung |
+|---|---|
+| **Schießen** | Fehlfunktion? → Zug verfällt (keine Munition verbraucht). Sonst −1 Munition, dann Fehlschuss-Wurf, dann Ausweich-Wurf des Ziels. Treffer: Schaden = Feuerkraft × (100 − Schadensreduktion) %, mind. 1; das Ziel verliert 1 % Schadensreduktion und erhält +1 % Fehlfunktion. |
+| **Shop** | Kauf beendet den Zug; Schließen ohne Kauf nicht. |
+| **Warten** | +1 Credit |
+
+Credits: +1 pro Treffer, +3 Abschussbonus. Der Startspieler wird ausgelost.
+
+| Panzer | Panzerung | Munition | Feuerkraft | Schadensred. | Ausweichen |
+|---|---|---|---|---|---|
+| Schwer | 120 | 7 | 15 | 13 % | 5 % |
+| Mittel | 110 | 9 | 14 | 11 % | 11 % |
+| Leicht | 95 | 11 | 12 | 9 % | 21 % |
+| Ultraleicht | 80 | 15 | 10 | 7 % | 31 % |
+
+Ausweichchance: 5 % + 2 % je 3 Punkte Start-Panzerung unter 120.
+
+| Shop-Artikel | Effekt | Preis |
+|---|---|---|
+| Panzerung +10 | +10 Panzerung | 3 |
+| Panzerung +20 | +20 Panzerung | 5 |
+| Munition +2 | +2 Munition | 4 |
+| Reparatur | −3 % Fehlfunktion | 2 |
+
+Alle Werte stehen in `src/engine/config.ts`.
+
+## Spielstände
+
+Gespeichert wird über den Button „💾 Speichern“ im Spiel. Die Spielstände liegen als JSON-Dateien im App-Datenordner (`$APPDATA/saves/`), in der Browser-Vorschau (`pnpm dev`) im localStorage des Browsers.
+
+## Ältere Terminal-Version (Python)
+
+Die ursprüngliche Terminal-Version liegt unverändert unter `python/` und wird nicht mehr gepflegt. Sie hat ein eigenes Regelwerk, das von der App abweicht (z. B. Erkennung des Computers über den Namen, Munitionspreis 3).
 
 ```bash
+cd python
+pip install -r requirements.txt
 python -m src.main
 ```
 
-### Schnellstart (Legacy)
-```bash
-python run.py
-```
-
-## 🕹️ Spielanleitung
-
-### Panzer-Attribute
-
-| Attribut | Beschreibung |
-|----------|--------------|
-| **Armor** | Panzerung, wird bei Treffern reduziert |
-| **Ammo** | Anzahl Munition, -1 pro Schuss |
-| **Power** | Schaden pro Schuss |
-| **Dmg Mitigation** | Schadensreduktion in %, -1 pro Treffer |
-| **Miss** | Fehlschuss-Wahrscheinlichkeit |
-| **Malfunction** | Fehlfunktions-Wahrscheinlichkeit |
-| **Credits** | Währung für den Shop |
-
-### Vordefinierte Panzer
-
-| Panzer | Armor | Ammo | Power | Dmg Mit. |
-|--------|-------|------|-------|----------|
-| Heavy Tank | 120 | 7 | 15 | 13 |
-| Middle Tank | 110 | 9 | 14 | 11 |
-| Light Tank | 95 | 11 | 12 | 9 |
-| UltraLight Tank | 80 | 15 | 10 | 7 |
-
-### Aktionen pro Runde
-
-- **[S]hoot**: Auf Gegner schießen
-- **[B]uy**: Shop öffnen
-- **[N]othing**: Warten (+1 Credit)
-
-### Shop-Items
-
-| Item | Effekt | Preis |
-|------|--------|-------|
-| Armor+10 | +10 Panzerung | 3 Credits |
-| Armor+20 | +20 Panzerung | 5 Credits |
-| Ammo+2 | +2 Munition | 3 Credits |
-| Repair | -1% Fehlfunktion | 2 Credits |
-
-## 📁 Projektstruktur
+## Projektstruktur
 
 ```
-tankgame/
-├── src/
-│   ├── __init__.py
-│   ├── main.py          # Einstiegspunkt
-│   ├── tank.py          # Tank-Klasse
-│   ├── game.py          # Spiellogik
-│   ├── shop.py          # Shop-System
-│   ├── ui.py            # UI-Funktionen
-│   ├── config.py        # Einstellungen
-│   └── utils.py         # Hilfsfunktionen
-├── tests/
-│   ├── test_tank.py
-│   ├── test_game.py
-│   └── test_shop.py
-├── saves/               # Spielstände
-├── requirements.txt
-├── README.md
-└── LICENSE
+src/
+├── engine/        # reine Spiellogik (kein DOM, kein Tauri) – vollständig getestet
+│   ├── config.ts  # Werte, Panzer, Shop
+│   ├── game.ts    # createGame / applyAction / validateAction
+│   ├── tank.ts    # Schussauflösung, Punkteverteilung
+│   ├── ai.ts      # Computergegner
+│   └── save.ts    # (De-)Serialisierung
+├── lib/           # App-Zustand, Animationssteuerung, Dateizugriff
+└── ui/            # Svelte-Komponenten
+src-tauri/         # Rust-Shell, Fenster, Berechtigungen (nur $APPDATA/saves)
+tests/engine/      # Vitest
+python/            # ursprüngliche Terminal-Version (eingefroren, nicht mehr gepflegt)
+PLAN-tauri.md      # Portierungsplan und getroffene Entscheidungen
 ```
 
-## 🧪 Tests
+## Lizenz
 
-```bash
-pytest tests/ -v
-```
-
-## 📜 Lizenz
-
-MIT License - siehe [LICENSE](LICENSE)
-
-## 🤝 Beitragen
-
-Pull Requests sind willkommen! Für größere Änderungen bitte zuerst ein Issue eröffnen.
+MIT – siehe [LICENSE](LICENSE).

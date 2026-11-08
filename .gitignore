@@ -70,3 +70,8 @@ venv.bak/
 saves/
 *.save
 *.log
+
+# Node / Tauri
+node_modules/
+src-tauri/target/
+src-tauri/gen/schemas/
